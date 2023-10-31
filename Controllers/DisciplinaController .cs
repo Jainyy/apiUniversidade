@@ -12,40 +12,66 @@ namespace apiUniversidade.Controllers
     public class DisciplinaController  : ControllerBase
     {
 
-        [HttpGet(Name = "disciplinas")]
-        public List<Disciplina> GetDisciplina()
+        private readonly ILogger<CursoController> _logger;
+        private readonly ApiUniversidadeContext _context;
+
+        public CursoController(ILogger<CursoController> logger, ApiUniversidadeContext context)
         {
-            List<Disciplina> disciplinas = new List<Disciplina>();
-            //Disciplina d = new Disciplina
+            _logger = logger;
+            _context = context;
             
-            /*disciplinas.add(new Disciplina){
-                Nome = "Programação para Internet", 
-                CargaHoraria = 60, 
-                Semestre = 4, 
-            };
-            return disciplinas; */
+        }
 
-            Disciplina d1 = new Disciplina();
-            d1.Nome = "Programação para Internet";
-            d1.CargaHoraria = 60;
-            d1.Semestre = 4;
+        [HttpGet]
+        public ActionResult<IEnumerable<Curso>> Get()
+        {
+            var cursos = _context.Cursos.ToList();
+            if (cursos.Count == 0)
+                return NotFound();
 
-            Disciplina d2 = new Disciplina();
-            d2.Nome = "Internet";
-            d2.CargaHoraria = 60;
-            d2.Semestre = 5;
+            return cursos;
+        }
+        [HttpGet("{id:int}", Name ="GetCurso")]
+        public ActionResult<Curso> Get(int id)
+        {
+            var curso = _context.Cursos.FirstOrDefault(p => p.Id == id);
+            if(curso is null)
+                return NotFound("Curso não encontrado.");
+            
+            return curso;
+        }
 
-            Disciplina d3 = new Disciplina();
-            d3.Nome = "Programação";
-            d3.CargaHoraria = 60;
-            d3.Semestre = 6;
+        [HttpPut("{id:int}")]
+        public ActionResult Put(int id, Curso curso){
+            if(id != curso.Id)
+                return BadRequest();
+            _context.Entry(curso).State = EntityState.Modified;
+            _context.SaveChanges();
 
-            disciplinas.Add(d1);
-            disciplinas.Add(d2);
-            disciplinas.Add(d3);
+            return Ok(curso);
+        }
 
-            return disciplinas;
+        [HttpDelete("{id:int}")]
+        public ActionResult Delete(int id){
+            var curso = _context.Cursos.FirstOrDefault(p => p.Id == id);
 
+            if (curso is null)
+                return NotFound();
+            _context.Cursos.Remove(curso);
+            _context.SaveChanges();
+
+            return Ok(curso);
+        }
+
+      
+        [HttpPost]
+        public ActionResult Post(Curso curso){
+            _context.Cursos.Add(curso);
+            _context.SaveChanges();
+
+            return new CreatedAtRouteResult("GetCurso",
+                new {id = curso.Id},
+                curso);
         }
     }
 }
