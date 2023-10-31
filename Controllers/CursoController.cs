@@ -64,7 +64,7 @@ namespace apiUniversidade.Controllers
             return Ok(curso);
         }
 
-
+      
         [HttpPost]
         public ActionResult Post(Curso curso){
             _context.Cursos.Add(curso);
@@ -74,11 +74,5 @@ namespace apiUniversidade.Controllers
                 new {id = curso.Id},
                 curso);
         }
-
-
-
     }
-
-
-
 }
