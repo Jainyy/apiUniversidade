@@ -73,6 +73,6 @@ namespace apiUniversidade.Controllers
             return new CreatedAtRouteResult("GetCurso",
                 new {id = curso.Id},
                 curso);
-        }
+        }   
     }
 }
